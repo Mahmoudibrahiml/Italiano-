@@ -881,21 +881,21 @@
     function exportCleanA5PDF(ord, copyNum) {
         let itemsRowsHtml = ord.items.map(it => `
             <tr>
-                <td style="font-weight:bold; width:25px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.index}</td>
-                <td style="width:35px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.code || ''}</td>
-                <td style="text-align:right; border:1px solid #444; padding:3px 4px;">${it.title || ''}</td>
-                <td style="width:75px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.color && it.color !== '-' ? it.color : ''}</td>
-                <td style="width:65px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.size && it.size !== '-' ? it.size : ''}</td>
-                <td style="width:40px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.qty > 0 ? it.qty : ''}</td>
-                <td style="width:55px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.price > 0 ? it.price : ''}</td>
-                <td style="font-weight:bold; width:65px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.total !== '0' ? it.total : ''}</td>
+                <td style="font-weight:bold; width:25px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.index}</td>
+                <td style="width:35px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.code || ''}</td>
+                <td style="text-align:right; border:1px solid #222; padding:3px 4px;">${it.title || ''}</td>
+                <td style="width:70px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.color && it.color !== '-' ? it.color : ''}</td>
+                <td style="width:60px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.size && it.size !== '-' ? it.size : ''}</td>
+                <td style="width:35px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.qty > 0 ? it.qty : ''}</td>
+                <td style="width:50px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.price > 0 ? it.price : ''}</td>
+                <td style="font-weight:bold; width:65px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.total !== '0' ? it.total : ''}</td>
             </tr>
         `).join('');
 
         const container = document.getElementById('clean-pdf-generator');
         container.style.display = 'block';
         container.innerHTML = `
-            <div style="width: 140mm; min-height: 200mm; background: #fff; padding: 4mm 5mm; box-sizing: border-box; direction: rtl; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #111;">
+            <div style="width: 140mm; min-height: 200mm; margin: 0 auto; background: #fff; padding: 2mm; box-sizing: border-box; direction: rtl; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #111;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #222; padding-bottom: 4px; margin-bottom: 4px;">
                     <div style="background: #111; color: #fff; padding: 4px 8px; text-align: center; font-size: 8.5pt; font-weight: bold; border-radius: 2px; line-height: 1.2;">
                         ★ إيطاليانو ★<br><span style="font-size: 7pt;">للملابس الجاهزة</span>
@@ -908,40 +908,40 @@
 
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px; font-size: 8.5pt;">
                     <tr>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; width: 65px; text-align: center; padding: 2px 4px;">رقم الأوردر:</td>
-                        <td style="border: 1px solid #444; width: 65px; color: #a30000; font-weight: bold; text-align: center; padding: 2px 4px;">${ord.id}</td>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; width: 45px; text-align: center; padding: 2px 4px;">التاريخ:</td>
-                        <td style="border: 1px solid #444; width: 75px; text-align: center; padding: 2px 4px;">${ord.date}</td>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; width: 50px; text-align: center; padding: 2px 4px;">المندوب:</td>
-                        <td style="border: 1px solid #444; padding: 2px 4px;">${ord.rep}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; width: 65px; text-align: center; padding: 2px 4px;">رقم الأوردر:</td>
+                        <td style="border: 1px solid #222; width: 65px; color: #a30000; font-weight: bold; text-align: center; padding: 2px 4px;">${ord.id}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; width: 45px; text-align: center; padding: 2px 4px;">التاريخ:</td>
+                        <td style="border: 1px solid #222; width: 75px; text-align: center; padding: 2px 4px;">${ord.date}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; width: 50px; text-align: center; padding: 2px 4px;">المندوب:</td>
+                        <td style="border: 1px solid #222; padding: 2px 4px;">${ord.rep}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">اسم العميل:</td>
-                        <td colspan="3" style="border: 1px solid #444; font-weight: bold; padding: 2px 4px;">${ord.client}</td>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">رقم التليفون:</td>
-                        <td style="border: 1px solid #444; padding: 2px 4px;">${ord.phone || '-'}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">اسم العميل:</td>
+                        <td colspan="3" style="border: 1px solid #222; font-weight: bold; padding: 2px 4px;">${ord.client}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">رقم التليفون:</td>
+                        <td style="border: 1px solid #222; padding: 2px 4px;">${ord.phone || '-'}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">العنوان:</td>
-                        <td colspan="5" style="border: 1px solid #444; padding: 2px 4px;">${ord.address || '-'}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">العنوان:</td>
+                        <td colspan="5" style="border: 1px solid #222; padding: 2px 4px;">${ord.address || '-'}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">ملاحظات:</td>
-                        <td colspan="5" style="border: 1px solid #444; padding: 2px 4px;">${ord.notes || ''}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">ملاحظات:</td>
+                        <td colspan="5" style="border: 1px solid #222; padding: 2px 4px;">${ord.notes || ''}</td>
                     </tr>
                 </table>
 
                 <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 8pt; margin-bottom: -1px;">
                     <thead>
                         <tr style="background: #ece7de; font-weight: bold;">
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 25px;">م</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 35px;">رقم</th>
-                            <th style="border: 1px solid #444; padding: 3px 2px;">الصنف / البيان</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 75px;">اللون</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 65px;">المقاس</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 40px;">العدد</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 55px;">السعر</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 65px;">الإجمالي</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 25px;">م</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 35px;">رقم</th>
+                            <th style="border: 1px solid #222; padding: 3px 2px;">الصنف / البيان</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 70px;">اللون</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 60px;">المقاس</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 35px;">العدد</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 50px;">السعر</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 65px;">الإجمالي</th>
                         </tr>
                     </thead>
                     <tbody>${itemsRowsHtml}</tbody>
@@ -949,21 +949,21 @@
 
                 <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt;">
                     <tr>
-                        <td colspan="6" style="border: 1px solid #444; font-weight: bold; text-align: center; background: #fdfdfd; padding: 2px;">إجمالي الأصناف</td>
-                        <td colspan="2" style="border: 1px solid #444; width: 120px; font-weight: bold; text-align: center; padding: 2px;">${ord.subtotal}</td>
+                        <td colspan="6" style="border: 1px solid #222; font-weight: bold; text-align: center; background: #fdfdfd; padding: 2px;">إجمالي الأصناف</td>
+                        <td colspan="2" style="border: 1px solid #222; width: 120px; font-weight: bold; text-align: center; padding: 2px;">${ord.subtotal}</td>
                     </tr>
                     <tr>
-                        <td colspan="6" style="border: 1px solid #444; font-weight: bold; text-align: center; background: #fdfdfd; padding: 2px;">مصاريف الشحن</td>
-                        <td colspan="2" style="border: 1px solid #444; width: 120px; font-weight: bold; text-align: center; padding: 2px;">${ord.shipping}</td>
+                        <td colspan="6" style="border: 1px solid #222; font-weight: bold; text-align: center; background: #fdfdfd; padding: 2px;">مصاريف الشحن</td>
+                        <td colspan="2" style="border: 1px solid #222; width: 120px; font-weight: bold; text-align: center; padding: 2px;">${ord.shipping}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #444; font-weight: bold; width: 90px; text-align: center; padding: 2px;">الإجمالي الكلي النهائي</td>
-                        <td colspan="5" style="border: 1px solid #444; font-size: 7.5pt; font-weight: bold; text-align: center; padding: 2px;">${ord.tafqeet}</td>
-                        <td colspan="2" style="border: 1px solid #444; width: 120px; font-weight: bold; color: #1e3c72; text-align: center; padding: 2px;">${ord.grandTotal}</td>
+                        <td style="border: 1px solid #222; font-weight: bold; width: 90px; text-align: center; padding: 2px;">الإجمالي الكلي النهائي</td>
+                        <td colspan="5" style="border: 1px solid #222; font-size: 7.5pt; font-weight: bold; text-align: center; padding: 2px;">${ord.tafqeet}</td>
+                        <td colspan="2" style="border: 1px solid #222; width: 120px; font-weight: bold; color: #1e3c72; text-align: center; padding: 2px;">${ord.grandTotal}</td>
                     </tr>
                 </table>
 
-                <div style="border: 1px solid #444; border-top: none; padding: 4px 6px; font-size: 8.5pt;">
+                <div style="border: 1px solid #222; border-top: none; padding: 4px 6px; font-size: 8.5pt;">
                     <div style="margin-bottom: 4px;"><strong>ملاحظات:</strong> ${ord.footerNotes || ''}</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px;">
                         <span><strong>توقيع المسؤول:</strong> ............................................</span>
@@ -974,7 +974,7 @@
         `;
 
         const opt = {
-            margin: [2, 2, 2, 2],
+            margin: [4, 4, 4, 4],
             filename: `فاتورة_رقم_${ord.id}_العميل_${ord.client.replace(/[\/\?%*:|"<>]/g, '_')}_نسخة_${copyNum}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 3, useCORS: true, letterRendering: true },
@@ -984,9 +984,9 @@
         return html2pdf().set(opt).from(container.children[0]).save().then(() => {
             container.style.display = 'none';
         });
-    }
-
-    function getUserScopedOrders() {
+        {
+                                                                                                     
+    function getUserScopedOrders() 
         if (!loggedUser) return [];
         if (loggedUser.isDev || loggedUser.role === 'مطور النظام' || loggedUser.role === 'مدير' || loggedUser.seeScope === 'all') {
             return orderArchive;
