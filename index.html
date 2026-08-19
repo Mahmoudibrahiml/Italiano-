@@ -53,7 +53,7 @@
         
         .paper-footer { border: 1px solid var(--excel-border); border-top: none; padding: 6px 8px; background: #fff; }
         .footer-note-row { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-bottom: 6px; }
-        .footer-note-row input { flex: 1; border: none; border-bottom: 1px dashed #888; outline: none; font-size: 11px; }
+        .footer-note-row input, .footer-note-row select { flex: 1; border: none; border-bottom: 1px dashed #888; outline: none; font-size: 11px; background: transparent; }
         .footer-action-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; padding-top: 4px; }
         .btn-submit-order { background: #27ae60; color: #fff; border: none; padding: 6px 16px; font-weight: bold; font-size: 12px; cursor: pointer; border-radius: 4px; box-shadow: 0 2px 6px rgba(39, 174, 96, 0.3); }
         .modal-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 100000; padding: 10px; }
@@ -127,7 +127,7 @@
         <button class="dock-btn users" id="btn-dock-users" onclick="openUserManagement()">👥 الصلاحيات</button>
         <button class="dock-btn fields" id="btn-dock-fields" onclick="openFieldManager()">🎛️ تخصيص</button>
         <button class="dock-btn excel" id="btn-dock-excel" onclick="exportFullArchiveAndReportsToExcel()">📊 إكسل</button>
-        <button class="dock-btn sync" id="btn-dock-sync" onclick="syncCloudDirect()">🔄 تحديث </button>
+        <button class="dock-btn sync" id="btn-dock-sync" onclick="syncCloudDirect()">🔄 تحديث سحابي</button>
         <button class="dock-btn logout" onclick="userLogout()">🚪 خروج</button>
     </div>
 
@@ -162,7 +162,7 @@
                 </tr>
                 <tr>
                     <td class="lbl">ملاحظات:</td>
-                    <td colspan="5"><input type="text" id="cust-notes"></td>
+                    <td colspan="5" id="top-notes-field-container"><input type="text" id="cust-notes" placeholder="ملاحظات العميل..."></td>
                 </tr>
             </table>
 
@@ -200,8 +200,10 @@
 
             <div class="paper-footer">
                 <div class="footer-note-row">
-                    <span style="font-weight: bold;">ملاحظات:</span>
-                    <input type="text" id="footer-notes">
+                    <span style="font-weight: bold; white-space: nowrap;">ملاحظات:</span>
+                    <div id="footer-notes-field-container" style="flex: 1; display: flex;">
+                        <input type="text" id="footer-notes" placeholder="................................................................................">
+                    </div>
                 </div>
                 <div class="footer-action-row">
                     <span style="font-weight: bold;">توقيع المسؤول: ............................................</span>
@@ -411,10 +413,18 @@
     <div class="modal-body-card">
         <div class="modal-head"><span>🎛️ تخصيص الحقول والقوائم</span><span style="cursor: pointer;" onclick="closeFieldManager()">✕</span></div>
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; margin-bottom: 12px; font-size: 11.5px;">
-            <div style="display: flex; gap: 15px;"><label><input type="checkbox" id="chk-addr-dropdown" onchange="toggleFieldTypes()"> تحويل حقل العنوان لقائمة منسدلة</label></div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <label><input type="checkbox" id="chk-addr-dropdown" onchange="toggleFieldTypes()"> تحويل العنوان لقائمة منسدلة</label>
+                <label><input type="checkbox" id="chk-items-dropdown" onchange="toggleFieldTypes()"> تحويل الصنف/البيان لقائمة منسدلة</label>
+                <label><input type="checkbox" id="chk-notes-dropdown" onchange="toggleFieldTypes()"> تحويل الملاحظات العلوية لقائمة منسدلة</label>
+                <label><input type="checkbox" id="chk-footer-notes-dropdown" onchange="toggleFieldTypes()"> تحويل الملاحظات السفلية لقائمة منسدلة</label>
+            </div>
         </div>
         <div style="display: flex; gap: 6px; margin-bottom: 8px;">
             <select id="select-list-target" onchange="renderTargetListTags()" style="padding: 6px; font-size: 11.5px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="items">📦 قائمة الأصناف والبيان</option>
+                <option value="notes">📝 قائمة الملاحظات العلوية</option>
+                <option value="footerNotes">📋 قائمة الملاحظات السفلية</option>
                 <option value="sizes">📏 قائمة المقاسات</option>
                 <option value="colors">🎨 قائمة الألوان</option>
                 <option value="reps">👔 قائمة المناديب</option>
@@ -502,7 +512,6 @@
         </div>
     </div>
 </div>
-
 <div id="print-options-modal" class="modal-bg">
     <div class="modal-body-card" style="max-width: 420px; text-align: right;">
         <div class="modal-head"><span>🚀 خيارات الطباعة وتنزيل PDF</span><span style="cursor: pointer;" onclick="closePrintOptionsModal()">✕</span></div>
@@ -511,7 +520,7 @@
             <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: bold; cursor: pointer; margin-bottom: 8px;">
                 <input type="checkbox" id="opt-direct-print" checked onchange="toggleDirectPrintCopies(this.checked)">
                 <span>🖨️ طباعة الفاتورة عبر الطابعة مباشرة</span>
- </label>
+            </label>
             <div id="direct-print-copies-box" style="margin-right: 24px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
                 <span style="font-size: 11px; color: #555;">عدد النسخ:</span>
                 <input type="number" id="direct-print-copies-val" value="2" min="1" max="10" style="width: 50px; padding: 3px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-weight: bold; color: #a30000;">
@@ -533,11 +542,14 @@
 <script>
     const CLOUD_DB_URL = "https://italiano-system-default-rtdb.firebaseio.com";
 
+    let APP_ITEMS = ["-", "ترنج رجالي صيفي", "تيشيرت بولو سادة", "بنطلون جبردين كلاسيك", "سويت شيرت شتوي", "شروال قطن مريح", "قميص قطن شبابي", "هودي أوفر سايز"];
+    let APP_TOP_NOTES = ["-", "استلام من الفرع", "شحن سريع وعاجل", "معاينة وقياس قبل الاستلام", "ممنوع الفتح إلا بعد التحصيل", "مؤجل بناءً على طلب العميل", "التسليم في مواعيد العمل الرسمية"];
+    let APP_BOTTOM_NOTES = ["-", "يرجى مراجعة البنود ومطابقة الألوان والمقاسات عند الاستلام", "البضاعة المباعة لا ترد ولا تستبدل بعد مرور 14 يوم", "في حال وجود أي استفسار يرجى التواصل مع خدمة العملاء", "الاستلام بعد فحص الطرد والتأكد من سلامة التغليف", "يتم التحصيل نقداً عند الاستلام من المندوب"];
     let APP_SIZES = ["-", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL", "أوفر سايز", "مقاس خاص", "أطفال 4", "أطفال 6", "أطفال 8", "أطفال 10", "أطفال 12", "أطفال 14"];
     let APP_COLORS = ["-", "أسود", "أبيض", "كحلي", "رمادي فاتح", "رمادي غامق", "بيج", "زيتي", "نبيتي", "أحمر", "أزرق ملكي", "هافان", "مستردة", "سيمون", "منت جرين"];
     let APP_REPS = ["احمد سعد", "محمد ابراهيم", "محمود علي", "عمرو حسن"];
     let APP_AREAS = ["الإسكندرية - محرم بك", "الإسكندرية - برج العرب", "الإسكندرية - سموحة", "القاهرة - مدينة نصر", "القاهرة - المعادي", "الجيزة - الدقي", "الدقهلية - المنصورة"];
-    let FIELD_SETTINGS = { addressDropdown: false };
+    let FIELD_SETTINGS = { addressDropdown: false, itemsDropdown: false, notesDropdown: false, footerNotesDropdown: false };
     
     const defaultDevUser = { user: "23", pass: "2003", role: "مطور النظام", name: "محمود (مطور النظام ★)", isDev: true, seeScope: "all", perms: { archive: true, log: true, reports: true, fields: true, excel: true, users: true } };
     let systemUsers = [defaultDevUser];
@@ -633,6 +645,9 @@
             if (resSet.ok) {
                 const sData = await resSet.json();
                 if(sData) {
+                    if (sData.items) APP_ITEMS = sData.items;
+                    if (sData.topNotes) APP_TOP_NOTES = sData.topNotes;
+                    if (sData.bottomNotes) APP_BOTTOM_NOTES = sData.bottomNotes;
                     if (sData.sizes) APP_SIZES = sData.sizes;
                     if (sData.colors) APP_COLORS = sData.colors;
                     if (sData.reps) APP_REPS = sData.reps;
@@ -752,7 +767,25 @@
         } else {
             addrCont.innerHTML = `<input type="text" id="cust-address" placeholder="المحافظة / المدينة / العنوان">`;
         }
+
+        const topNotesCont = document.getElementById('top-notes-field-container');
+        if(FIELD_SETTINGS.notesDropdown) {
+            topNotesCont.innerHTML = `<select id="cust-notes">${APP_TOP_NOTES.map(n => `<option value="${n === '-' ? '' : n}">${n}</option>`).join('')}</select>`;
+        } else {
+            topNotesCont.innerHTML = `<input type="text" id="cust-notes" placeholder="ملاحظات العميل...">`;
+        }
+
+        const footerNotesCont = document.getElementById('footer-notes-field-container');
+        if(FIELD_SETTINGS.footerNotesDropdown) {
+            footerNotesCont.innerHTML = `<select id="footer-notes">${APP_BOTTOM_NOTES.map(n => `<option value="${n === '-' ? '' : n}">${n}</option>`).join('')}</select>`;
+        } else {
+            footerNotesCont.innerHTML = `<input type="text" id="footer-notes" placeholder="................................................................................">`;
+        }
+
         document.getElementById('chk-addr-dropdown').checked = FIELD_SETTINGS.addressDropdown;
+        document.getElementById('chk-items-dropdown').checked = FIELD_SETTINGS.itemsDropdown;
+        document.getElementById('chk-notes-dropdown').checked = FIELD_SETTINGS.notesDropdown;
+        document.getElementById('chk-footer-notes-dropdown').checked = FIELD_SETTINGS.footerNotesDropdown;
     }
 
     function buildRows() {
@@ -761,11 +794,15 @@
         for (let i = 1; i <= 12; i++) {
             let colorOpts = APP_COLORS.map(c => `<option value="${c}">${c}</option>`).join('');
             let sizeOpts = APP_SIZES.map(s => `<option value="${s}">${s}</option>`).join('');
+            let itemCellHtml = FIELD_SETTINGS.itemsDropdown 
+                ? `<select class="r-title">${APP_ITEMS.map(it => `<option value="${it === '-' ? '' : it}">${it}</option>`).join('')}</select>`
+                : `<input type="text" class="r-title" placeholder="اسم الصنف...">`;
+
             tbody.innerHTML += `
                 <tr>
                     <td style="font-weight: bold; background: #fafafa;">${i}</td>
                     <td><input type="text" class="r-code"></td>
-                    <td><input type="text" class="r-title"></td>
+                    <td>${itemCellHtml}</td>
                     <td><select class="r-color">${colorOpts}</select></td>
                     <td><select class="r-size">${sizeOpts}</select></td>
                     <td><input type="number" class="r-qty" min="0" oninput="calcOrderTotals()"></td>
@@ -851,7 +888,7 @@
             });
         } catch(e){}
 
-        orderArchive.push(orderRecord);
+        orderArchive.porderArchive.push(orderRecord);
 
         const wantDirectPrint = document.getElementById('opt-direct-print').checked;
         const wantDownloadPDF = document.getElementById('opt-download-pdf').checked;
@@ -871,8 +908,8 @@
         document.getElementById('cust-name').value = '';
         document.getElementById('cust-phone').value = '';
         if(!FIELD_SETTINGS.addressDropdown) document.getElementById('cust-address').value = '';
-        document.getElementById('cust-notes').value = '';
-        document.getElementById('footer-notes').value = '';
+        if(!FIELD_SETTINGS.notesDropdown) document.getElementById('cust-notes').value = '';
+        if(!FIELD_SETTINGS.footerNotesDropdown) document.getElementById('footer-notes').value = '';
         buildRows();
         calcOrderTotals();
         updateOrderNumberField();
@@ -881,21 +918,24 @@
     function exportCleanA5PDF(ord, copyNum) {
         let itemsRowsHtml = ord.items.map(it => `
             <tr>
-                <td style="font-weight:bold; width:25px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.index}</td>
-                <td style="width:35px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.code || ''}</td>
-                <td style="text-align:right; border:1px solid #444; padding:3px 4px;">${it.title || ''}</td>
-                <td style="width:75px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.color && it.color !== '-' ? it.color : ''}</td>
-                <td style="width:65px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.size && it.size !== '-' ? it.size : ''}</td>
-                <td style="width:40px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.qty > 0 ? it.qty : ''}</td>
-                <td style="width:55px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.price > 0 ? it.price : ''}</td>
-                <td style="font-weight:bold; width:65px; border:1px solid #444; padding:3px 1px; text-align:center;">${it.total !== '0' ? it.total : ''}</td>
+                <td style="font-weight:bold; width:22px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.index}</td>
+                <td style="width:35px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.code || ''}</td>
+                <td style="text-align:right; border:1px solid #222; padding:3px 4px;">${it.title || ''}</td>
+                <td style="width:70px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.color && it.color !== '-' ? it.color : ''}</td>
+                <td style="width:60px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.size && it.size !== '-' ? it.size : ''}</td>
+                <td style="width:35px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.qty > 0 ? it.qty : ''}</td>
+                <td style="width:50px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.price > 0 ? it.price : ''}</td>
+                <td style="font-weight:bold; width:65px; border:1px solid #222; padding:3px 1px; text-align:center;">${it.total !== '0' ? it.total : ''}</td>
             </tr>
         `).join('');
 
         const container = document.getElementById('clean-pdf-generator');
         container.style.display = 'block';
+        
+        const footerNoteText = ord.footerNotes ? ord.footerNotes : '................................................................................';
+
         container.innerHTML = `
-            <div style="width: 140mm; min-height: 200mm; background: #fff; padding: 4mm 5mm; box-sizing: border-box; direction: rtl; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #111;">
+            <div style="width: 140mm; min-height: 200mm; margin: 0 auto; background: #fff; padding: 2mm; box-sizing: border-box; direction: rtl; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #111;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #222; padding-bottom: 4px; margin-bottom: 4px;">
                     <div style="background: #111; color: #fff; padding: 4px 8px; text-align: center; font-size: 8.5pt; font-weight: bold; border-radius: 2px; line-height: 1.2;">
                         ★ إيطاليانو ★<br><span style="font-size: 7pt;">للملابس الجاهزة</span>
@@ -908,40 +948,40 @@
 
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px; font-size: 8.5pt;">
                     <tr>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; width: 65px; text-align: center; padding: 2px 4px;">رقم الأوردر:</td>
-                        <td style="border: 1px solid #444; width: 65px; color: #a30000; font-weight: bold; text-align: center; padding: 2px 4px;">${ord.id}</td>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; width: 45px; text-align: center; padding: 2px 4px;">التاريخ:</td>
-                        <td style="border: 1px solid #444; width: 75px; text-align: center; padding: 2px 4px;">${ord.date}</td>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; width: 50px; text-align: center; padding: 2px 4px;">المندوب:</td>
-                        <td style="border: 1px solid #444; padding: 2px 4px;">${ord.rep}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; width: 65px; text-align: center; padding: 2px 4px;">رقم الأوردر:</td>
+                        <td style="border: 1px solid #222; width: 65px; color: #a30000; font-weight: bold; text-align: center; padding: 2px 4px;">${ord.id}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; width: 45px; text-align: center; padding: 2px 4px;">التاريخ:</td>
+                        <td style="border: 1px solid #222; width: 75px; text-align: center; padding: 2px 4px;">${ord.date}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; width: 50px; text-align: center; padding: 2px 4px;">المندوب:</td>
+                        <td style="border: 1px solid #222; padding: 2px 4px;">${ord.rep}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">اسم العميل:</td>
-                        <td colspan="3" style="border: 1px solid #444; font-weight: bold; padding: 2px 4px;">${ord.client}</td>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">رقم التليفون:</td>
-                        <td style="border: 1px solid #444; padding: 2px 4px;">${ord.phone || '-'}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">اسم العميل:</td>
+                        <td colspan="3" style="border: 1px solid #222; font-weight: bold; padding: 2px 4px;">${ord.client}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">رقم التليفون:</td>
+                        <td style="border: 1px solid #222; padding: 2px 4px;">${ord.phone || '-'}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">العنوان:</td>
-                        <td colspan="5" style="border: 1px solid #444; padding: 2px 4px;">${ord.address || '-'}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">العنوان:</td>
+                        <td colspan="5" style="border: 1px solid #222; padding: 2px 4px;">${ord.address || '-'}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #444; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">ملاحظات:</td>
-                        <td colspan="5" style="border: 1px solid #444; padding: 2px 4px;">${ord.notes || ''}</td>
+                        <td style="border: 1px solid #222; background: #f2eee6; font-weight: bold; text-align: center; padding: 2px 4px;">ملاحظات:</td>
+                        <td colspan="5" style="border: 1px solid #222; padding: 2px 4px;">${ord.notes || ''}</td>
                     </tr>
                 </table>
 
                 <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 8pt; margin-bottom: -1px;">
                     <thead>
                         <tr style="background: #ece7de; font-weight: bold;">
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 25px;">م</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 35px;">رقم</th>
-                            <th style="border: 1px solid #444; padding: 3px 2px;">الصنف / البيان</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 75px;">اللون</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 65px;">المقاس</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 40px;">العدد</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 55px;">السعر</th>
-                            <th style="border: 1px solid #444; padding: 3px 1px; width: 65px;">الإجمالي</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 22px;">م</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 35px;">رقم</th>
+                            <th style="border: 1px solid #222; padding: 3px 2px;">الصنف / البيان</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 70px;">اللون</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 60px;">المقاس</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 35px;">العدد</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 50px;">السعر</th>
+                            <th style="border: 1px solid #222; padding: 3px 1px; width: 65px;">الإجمالي</th>
                         </tr>
                     </thead>
                     <tbody>${itemsRowsHtml}</tbody>
@@ -949,22 +989,24 @@
 
                 <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt;">
                     <tr>
-                        <td colspan="6" style="border: 1px solid #444; font-weight: bold; text-align: center; background: #fdfdfd; padding: 2px;">إجمالي الأصناف</td>
-                        <td colspan="2" style="border: 1px solid #444; width: 120px; font-weight: bold; text-align: center; padding: 2px;">${ord.subtotal}</td>
+                        <td colspan="6" style="border: 1px solid #222; font-weight: bold; text-align: center; background: #fdfdfd; padding: 2px;">إجمالي الأصناف</td>
+                        <td colspan="2" style="border: 1px solid #222; width: 120px; font-weight: bold; text-align: center; padding: 2px;">${ord.subtotal}</td>
                     </tr>
                     <tr>
-                        <td colspan="6" style="border: 1px solid #444; font-weight: bold; text-align: center; background: #fdfdfd; padding: 2px;">مصاريف الشحن</td>
-                        <td colspan="2" style="border: 1px solid #444; width: 120px; font-weight: bold; text-align: center; padding: 2px;">${ord.shipping}</td>
+                        <td colspan="6" style="border: 1px solid #222; font-weight: bold; text-align: center; background: #fdfdfd; padding: 2px;">مصاريف الشحن</td>
+                        <td colspan="2" style="border: 1px solid #222; width: 120px; font-weight: bold; text-align: center; padding: 2px;">${ord.shipping}</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #444; font-weight: bold; width: 90px; text-align: center; padding: 2px;">الإجمالي الكلي النهائي</td>
-                        <td colspan="5" style="border: 1px solid #444; font-size: 7.5pt; font-weight: bold; text-align: center; padding: 2px;">${ord.tafqeet}</td>
-                        <td colspan="2" style="border: 1px solid #444; width: 120px; font-weight: bold; color: #1e3c72; text-align: center; padding: 2px;">${ord.grandTotal}</td>
+                        <td style="border: 1px solid #222; font-weight: bold; width: 90px; text-align: center; padding: 2px;">الإجمالي الكلي النهائي</td>
+                        <td colspan="5" style="border: 1px solid #222; font-size: 7.5pt; font-weight: bold; text-align: center; padding: 2px;">${ord.tafqeet}</td>
+                        <td colspan="2" style="border: 1px solid #222; width: 120px; font-weight: bold; color: #1e3c72; text-align: center; padding: 2px;">${ord.grandTotal}</td>
                     </tr>
                 </table>
 
-                <div style="border: 1px solid #444; border-top: none; padding: 4px 6px; font-size: 8.5pt;">
-                    <div style="margin-bottom: 4px;"><strong>ملاحظات:</strong> ${ord.footerNotes || ''}</div>
+                <div style="border: 1px solid #222; border-top: none; padding: 4px 6px; font-size: 8.5pt;">
+                    <div style="margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                        <strong>ملاحظات:</strong> <span>${footerNoteText}</span>
+                    </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 2px;">
                         <span><strong>توقيع المسؤول:</strong> ............................................</span>
                         <span style="color: #666; font-size: 7.5pt;">بواسطة: ${ord.byUser}</span>
@@ -974,8 +1016,8 @@
         `;
 
         const opt = {
-            margin: [2, 2, 2, 2],
-            filename: `فاتورة_رقم_${ord.id}_العميل_${ord.client.replace(/[\/\?%*:|"<>]/g, '_')}_نسخة_${copyNum}.pdf`,
+            margin: [4, 4, 4, 4],
+            filename: `فاتورة_رقم_${ord.id}_العميل_${(ord.client || 'عميل').replace(/[\/\?%*:|"<>]/g, '_')}_نسخة_${copyNum}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 3, useCORS: true, letterRendering: true },
             jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
@@ -1268,7 +1310,7 @@
     }
 
     async function deleteSelectedLogs() {
-        const selected = Array.from(document.ySelectorAll('.chk-log-item:checked')).map(chk => chk.value);
+        const selected = Array.from(document.querySelectorAll('.chk-log-item:checked')).map(chk => chk.value);
         if(selected.length === 0) return alert('يرجى تحديد أوردر واحد على الأقل للحذف!');
         
         if(confirm(`هل أنت متأكد من حذف (${selected.length}) أوردر محدد نهائياً من السحابة؟`)) {
@@ -1445,22 +1487,42 @@
 
     async function closeFieldManager() {
         document.getElementById('fields-modal-box').style.display = 'none';
+        applyFieldTypeSettings();
+        buildRows();
         try {
             fetch(`${CLOUD_DB_URL}/settings.json`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sizes: APP_SIZES, colors: APP_COLORS, reps: APP_REPS, areas: APP_AREAS, fieldSettings: FIELD_SETTINGS })
+                body: JSON.stringify({ 
+                    items: APP_ITEMS,
+                    topNotes: APP_TOP_NOTES,
+                    bottomNotes: APP_BOTTOM_NOTES,
+                    sizes: APP_SIZES, 
+                    colors: APP_COLORS, 
+                    reps: APP_REPS, 
+                    areas: APP_AREAS, 
+                    fieldSettings: FIELD_SETTINGS 
+                })
             });
         } catch(e){}
     }
 
     function toggleFieldTypes() {
         FIELD_SETTINGS.addressDropdown = document.getElementById('chk-addr-dropdown').checked;
+        FIELD_SETTINGS.itemsDropdown = document.getElementById('chk-items-dropdown').checked;
+        FIELD_SETTINGS.notesDropdown = document.getElementById('chk-notes-dropdown').checked;
+        FIELD_SETTINGS.footerNotesDropdown = document.getElementById('chk-footer-notes-dropdown').checked;
     }
 
     function renderTargetListTags() {
         const target = document.getElementById('select-list-target').value;
-        let list = target === 'sizes' ? APP_SIZES : target === 'colors' ? APP_COLORS : target === 'reps' ? APP_REPS : APP_AREAS;
+        let list = target === 'items' ? APP_ITEMS : 
+                   target === 'notes' ? APP_TOP_NOTES : 
+                   target === 'footerNotes' ? APP_BOTTOM_NOTES : 
+                   target === 'sizes' ? APP_SIZES : 
+                   target === 'colors' ? APP_COLORS : 
+                   target === 'reps' ? APP_REPS : APP_AREAS;
+                   
         document.getElementById('target-tags-container').innerHTML = list.map((item, idx) => item !== '-' ? `
             <div class="tag-item"><span>${item}</span><button type="button" onclick="removeTargetItem(${idx})">×</button></div>
         ` : '').join('');
@@ -1470,7 +1532,10 @@
         const target = document.getElementById('select-list-target').value;
         const val = document.getElementById('new-item-val').value.trim();
         if(!val) return;
-        if(target === 'sizes' && !APP_SIZES.includes(val)) APP_SIZES.push(val);
+        if(target === 'items' && !APP_ITEMS.includes(val)) APP_ITEMS.push(val);
+        else if(target === 'notes' && !APP_TOP_NOTES.includes(val)) APP_TOP_NOTES.push(val);
+        else if(target === 'footerNotes' && !APP_BOTTOM_NOTES.includes(val)) APP_BOTTOM_NOTES.push(val);
+        else if(target === 'sizes' && !APP_SIZES.includes(val)) APP_SIZES.push(val);
         else if(target === 'colors' && !APP_COLORS.includes(val)) APP_COLORS.push(val);
         else if(target === 'reps' && !APP_REPS.includes(val)) APP_REPS.push(val);
         else if(target === 'areas' && !APP_AREAS.includes(val)) APP_AREAS.push(val);
@@ -1480,7 +1545,10 @@
 
     function removeTargetItem(idx) {
         const target = document.getElementById('select-list-target').value;
-        if(target === 'sizes') APP_SIZES.splice(idx, 1);
+        if(target === 'items') APP_ITEMS.splice(idx, 1);
+        else if(target === 'notes') APP_TOP_NOTES.splice(idx, 1);
+        else if(target === 'footerNotes') APP_BOTTOM_NOTES.splice(idx, 1);
+        else if(target === 'sizes') APP_SIZES.splice(idx, 1);
         else if(target === 'colors') APP_COLORS.splice(idx, 1);
         else if(target === 'reps') APP_REPS.splice(idx, 1);
         else if(target === 'areas') APP_AREAS.splice(idx, 1);
@@ -1564,7 +1632,7 @@
             list = list.filter(o => {
                 const oDate = parseDateForFilter(o.date);
                 if (!oDate) return true;
-                if (dFrom && oDate < dFrom) return false;
+   if (dFrom && oDate < dFrom) return false;
                 if (dTo && oDate > dTo) return false;
                 return true;
             });
@@ -1599,6 +1667,8 @@
                 <td style="font-weight:bold; border:1px solid #444; text-align:center;">${it.total !== '0' ? it.total : ''}</td>
             </tr>
         `).join('');
+
+        const previewFooterNote = ord.footerNotes ? ord.footerNotes : '................................................................................';
 
         document.getElementById('preview-render-area').innerHTML = `
             <div style="background:#fff; border:1.5px solid #444; padding:8px; font-size:11px; direction:rtl; width:100%;">
@@ -1670,7 +1740,9 @@
                 </table>
 
                 <div style="border:1px solid #444; border-top:none; padding:4px 6px;">
-                    <div style="font-size:10.5px; margin-bottom:4px;"><strong>ملاحظات:</strong> ${ord.footerNotes || ''}</div>
+                    <div style="font-size:10.5px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <strong>ملاحظات:</strong> <span>${previewFooterNote}</span>
+                    </div>
                     <div style="display:flex; justify-content:space-between; font-size:10.5px;">
                         <span>توقيع المسؤول: ............................................</span>
                         <span style="color:#666;">بواسطة: ${ord.byUser}</span>
