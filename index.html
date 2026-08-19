@@ -57,13 +57,12 @@
         .footer-action-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; padding-top: 4px; }
         .btn-submit-order { background: #27ae60; color: #fff; border: none; padding: 6px 16px; font-weight: bold; font-size: 12px; cursor: pointer; border-radius: 4px; box-shadow: 0 2px 6px rgba(39, 174, 96, 0.3); }
         .modal-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 100000; padding: 10px; }
-        .modal-body-card { width: 100%; max-width: 600px; background: #fff; border-radius: 8px; padding: 14px; max-height: 92vh; overflow-y: auto; }
+        .modal-body-card { width: 100%; max-width: 620px; background: #fff; border-radius: 8px; padding: 14px; max-height: 92vh; overflow-y: auto; }
         .modal-head { font-size: 15px; font-weight: bold; color: #1a2a6c; border-bottom: 1.5px solid #eee; padding-bottom: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* كروت الداشبورد المتطورة */
         .dash-kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
         .kpi-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 4px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
-        .kpi-card .val { font-size: 14px; font-weight: bold; color: #1a2a6c; margin-top: 2px; }
+        .kpi-card .val { font-size: 13.5px; font-weight: bold; color: #1a2a6c; margin-top: 2px; }
         .kpi-card .title { font-size: 10px; color: #64748b; font-weight: bold; }
         
         .dash-charts-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
@@ -83,7 +82,12 @@
         .archive-list-table th, .archive-list-table td { border: 1px solid #ddd; padding: 5px 3px; text-align: center; }
         .archive-list-table th { background: #f8f9fa; }
         .batch-del-panel { background: #fff5f5; border: 1px solid #fed7d7; border-radius: 6px; padding: 8px; margin-bottom: 10px; font-size: 11.5px; }
-        .range-search-box { display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 8px; font-size: 11.5px; }
+        
+        .filter-panel-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; margin-bottom: 8px; font-size: 11px; }
+        .filter-panel-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-bottom: 5px; }
+        .filter-panel-row:last-child { margin-bottom: 0; }
+        .date-input-field { padding: 3px 5px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; outline: none; background: #fff; }
+        .quick-date-btn { background: #e2e8f0; border: 1px solid #cbd5e1; padding: 2px 5px; border-radius: 3px; font-size: 10px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -210,22 +214,39 @@
     </div>
 </div>
 
-<!-- داشبورد التقارير والرسوم البيانية المتقدم -->
+<!-- داشبورد التقارير -->
 <div id="reports-modal-box" class="modal-bg">
-    <div class="modal-body-card" style="max-width: 620px;">
+    <div class="modal-body-card">
         <div class="modal-head">
             <span>📈 لوحة التحكم والتحليلات البيانية الذكية (Dashboard)</span>
             <span style="cursor: pointer;" onclick="closeReports()">✕</span>
         </div>
 
-        <!-- كروت KPI السريعة -->
+        <div class="filter-panel-box">
+            <div class="filter-panel-row">
+                <span style="font-weight: bold; color: #1a2a6c;">📅 فلترة بالفترة الزمنية:</span>
+                <span>من:</span>
+                <input type="date" id="rep-date-from" class="date-input-field" onchange="openReportsDashboard()">
+                <span>إلى:</span>
+                <input type="date" id="rep-date-to" class="date-input-field" onchange="openReportsDashboard()">
+            </div>
+            <div class="filter-panel-row">
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('rep', 'all')">الكل</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('rep', 'today')">اليوم</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('rep', 'yesterday')">أمس</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('rep', 'since_yesterday')">منذ أمس حتى الآن</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('rep', 'week')">آخر 7 أيام</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('rep', 'month')">هذا الشهر</button>
+            </div>
+        </div>
+
         <div class="dash-kpi-grid">
             <div class="kpi-card"><div class="title">إجمالي الأوردرات</div><div class="val" id="rep-total-orders">0</div></div>
             <div class="kpi-card"><div class="title">إجمالي المبيعات</div><div class="val" id="rep-total-sales" style="color: #27ae60;">0 ج.م</div></div>
             <div class="kpi-card"><div class="title">إجمالي القطع المباعة</div><div class="val" id="rep-total-pieces" style="color: #ea580c;">0 قطعة</div></div>
             <div class="kpi-card"><div class="title">متوسط الأوردر</div><div class="val" id="rep-avg-order" style="color: #6366f1;">0 ج.م</div></div>
             <div class="kpi-card"><div class="title">إجمالي الشحن</div><div class="val" id="rep-total-shipping" style="color: #0284c7;">0 ج.م</div></div>
-            <div class="kpi-card"><div class="title">أعلى مندوب مبيعاً</div><div class="val" id="rep-top-rep" style="font-size: 11.5px; color: #1a2a6c;">-</div></div>
+            <div class="kpi-card"><div class="title">أعلى مندوب مبيعاً</div><div class="val" id="rep-top-rep" style="font-size: 11px; color: #1a2a6c;">-</div></div>
         </div>
 
         <div class="report-nav-tabs">
@@ -235,7 +256,6 @@
             <button class="rep-tab-btn" id="tab-btn-items" onclick="switchReportTab('items')">📦 حركة الأصناف</button>
         </div>
 
-        <!-- قسم الرسوم البيانية -->
         <div id="rep-sec-charts" class="dash-charts-container">
             <div class="chart-box">
                 <div class="chart-title">👔 مبيعات المناديب المقارنة (ج.م)</div>
@@ -247,19 +267,16 @@
             </div>
         </div>
 
-        <!-- قسم تفاصيل المناديب -->
         <div id="rep-sec-reps" style="display: none;">
-            <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #1a2a6c;">📊 مبيعات ونسب كل مندوب:</div>
+            <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #1a2a6c;">📊 مبيعات ونسب كل مندوب للفترة المحددة:</div>
             <div id="rep-users-stats" style="max-height: 220px; overflow-y: auto; border: 1px solid #e2e8f0; padding: 6px; border-radius: 4px; font-size: 11.5px; background: #fff;"></div>
         </div>
 
-        <!-- قسم تفاصيل المناطق -->
         <div id="rep-sec-areas" style="display: none;">
             <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #1a2a6c;">📍 تقرير المبيعات حسب المناطق:</div>
             <div id="rep-address-stats" style="max-height: 220px; overflow-y: auto; border: 1px solid #e2e8f0; padding: 6px; border-radius: 4px; font-size: 11.5px; background: #fff;"></div>
         </div>
 
-        <!-- قسم تحليل الأصناف الأكثر طلباً -->
         <div id="rep-sec-items" style="display: none;">
             <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #1a2a6c;">📦 الأصناف الأكثر مبيعاً وتحصيلاً:</div>
             <div id="rep-items-stats" style="max-height: 220px; overflow-y: auto; border: 1px solid #e2e8f0; padding: 6px; border-radius: 4px; font-size: 11.5px; background: #fff;"></div>
@@ -269,7 +286,7 @@
     </div>
 </div>
 
-<!-- شاشة سجل العمليات مع البحث العادي وبالنطاق -->
+<!-- شاشة سجل العمليات -->
 <div id="operations-log-modal" class="modal-bg">
     <div class="modal-body-card">
         <div class="modal-head"><span>📋 سجل العمليات والفواتير</span><span style="cursor: pointer;" onclick="closeOperationsLogModal()">✕</span></div>
@@ -288,16 +305,31 @@
             </div>
         </div>
 
-        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
-            <input type="text" id="log-filter-input" placeholder="🔍 بحث بالاسم أو رقم الأوردر..." oninput="applyAllLogFilters()" style="padding: 6px 8px; font-size: 11.5px; border: 1px solid #ccc; border-radius: 4px; flex: 1;">
-        </div>
-        
-        <div class="range-search-box">
-            <span style="font-weight: bold; color: #1a2a6c;">بحث برقم الأوردر من:</span>
-            <input type="number" id="log-range-from" placeholder="1001" oninput="applyAllLogFilters()" style="width: 70px; padding: 4px; font-size: 11.5px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-            <span style="font-weight: bold; color: #1a2a6c;">إلى:</span>
-            <input type="number" id="log-range-to" placeholder="1050" oninput="applyAllLogFilters()" style="width: 70px; padding: 4px; font-size: 11.5px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-            <button type="button" onclick="clearLogFilters()" style="background: #e2e8f0; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 11px;">إلغاء الفلترة</button>
+        <div class="filter-panel-box">
+            <div class="filter-panel-row">
+                <input type="text" id="log-filter-input" placeholder="🔍 بحث بالاسم أو رقم الأوردر أو المندوب..." oninput="applyAllLogFilters()" style="padding: 5px 8px; font-size: 11.5px; border: 1px solid #ccc; border-radius: 4px; flex: 1;">
+            </div>
+            <div class="filter-panel-row">
+                <span style="font-weight: bold; color: #1a2a6c;">📅 من تاريخ:</span>
+                <input type="date" id="log-date-from" class="date-input-field" onchange="applyAllLogFilters()">
+                <span style="font-weight: bold; color: #1a2a6c;">إلى:</span>
+                <input type="date" id="log-date-to" class="date-input-field" onchange="applyAllLogFilters()">
+            </div>
+            <div class="filter-panel-row">
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('log', 'all')">الكل</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('log', 'today')">اليوم</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('log', 'yesterday')">أمس</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('log', 'since_yesterday')">منذ أمس حتى الآن</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('log', 'week')">آخر 7 أيام</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('log', 'month')">هذا الشهر</button>
+            </div>
+            <div class="filter-panel-row" style="margin-top: 4px;">
+                <span style="font-weight: bold; color: #1a2a6c;">🔢 من أوردر #:</span>
+                <input type="number" id="log-range-from" placeholder="1001" oninput="applyAllLogFilters()" style="width: 60px; padding: 3px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                <span style="font-weight: bold; color: #1a2a6c;">إلى #:</span>
+                <input type="number" id="log-range-to" placeholder="1050" oninput="applyAllLogFilters()" style="width: 60px; padding: 3px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                <button type="button" onclick="clearLogFilters()" class="quick-date-btn">إلغاء الفلاتر</button>
+            </div>
         </div>
 
         <div style="max-height: 260px; overflow-y: auto;">
@@ -396,25 +428,59 @@
     </div>
 </div>
 
+<!-- شاشة الأرشيف مع التحديد والطباعة الجماعية والفلاتر الكاملة -->
 <div id="archive-modal-box" class="modal-bg">
     <div class="modal-body-card">
         <div class="modal-head"><span>📂 أرشيف طلبات تجهيز الأوردرات السحابي</span><span style="cursor: pointer;" onclick="closeArchive()">✕</span></div>
 
-        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
-            <input type="text" id="archive-search-input" placeholder="🔍 بحث برقم الأوردر أو اسم العميل..." oninput="applyAllArchiveFilters()" style="width: 100%; padding: 6px 10px; font-size: 12px; border: 1.5px solid #1a2a6c; border-radius: 4px;">
+        <div class="filter-panel-box">
+            <div class="filter-panel-row">
+                <input type="text" id="archive-search-input" placeholder="🔍 بحث بالاسم أو رقم الأوردر أو المندوب..." oninput="applyAllArchiveFilters()" style="padding: 5px 8px; font-size: 11.5px; border: 1px solid #ccc; border-radius: 4px; flex: 1;">
+            </div>
+            <div class="filter-panel-row">
+                <span style="font-weight: bold; color: #1a2a6c;">📅 من تاريخ:</span>
+                <input type="date" id="arch-date-from" class="date-input-field" onchange="applyAllArchiveFilters()">
+                <span style="font-weight: bold; color: #1a2a6c;">إلى:</span>
+                <input type="date" id="arch-date-to" class="date-input-field" onchange="applyAllArchiveFilters()">
+            </div>
+            <div class="filter-panel-row">
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('arch', 'all')">الكل</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('arch', 'today')">اليوم</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('arch', 'yesterday')">أمس</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('arch', 'since_yesterday')">منذ أمس حتى الآن</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('arch', 'week')">آخر 7 أيام</button>
+                <button type="button" class="quick-date-btn" onclick="setFilterDates('arch', 'month')">هذا الشهر</button>
+            </div>
+            <div class="filter-panel-row" style="margin-top: 4px;">
+                <span style="font-weight: bold; color: #1a2a6c;">🔢 من أوردر #:</span>
+                <input type="number" id="arch-range-from" placeholder="1001" oninput="applyAllArchiveFilters()" style="width: 60px; padding: 3px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                <span style="font-weight: bold; color: #1a2a6c;">إلى #:</span>
+                <input type="number" id="arch-range-to" placeholder="1050" oninput="applyAllArchiveFilters()" style="width: 60px; padding: 3px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
+                <button type="button" onclick="clearArchiveFilters()" class="quick-date-btn">إلغاء الفلاتر</button>
+            </div>
         </div>
 
-        <div class="range-search-box">
-            <span style="font-weight: bold; color: #1a2a6c;">بحث برقم الأوردر من:</span>
-            <input type="number" id="arch-range-from" placeholder="1001" oninput="applyAllArchiveFilters()" style="width: 70px; padding: 4px; font-size: 11.5px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-            <span style="font-weight: bold; color: #1a2a6c;">إلى:</span>
-            <input type="number" id="arch-range-to" placeholder="1050" oninput="applyAllArchiveFilters()" style="width: 70px; padding: 4px; font-size: 11.5px; border: 1px solid #ccc; border-radius: 3px; text-align: center;">
-            <button type="button" onclick="clearArchiveFilters()" style="background: #e2e8f0; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 11px;">إلغاء الفلترة</button>
+        <div style="display: flex; gap: 6px; align-items: center; justify-content: space-between; background: #e0e7ff; padding: 6px 8px; border-radius: 4px; margin-bottom: 6px;">
+            <div style="display: flex; gap: 4px; align-items: center;">
+                <button type="button" onclick="toggleSelectAllArchive(true)" class="quick-date-btn">تحديد الكل</button>
+                <button type="button" onclick="toggleSelectAllArchive(false)" class="quick-date-btn">إلغاء التحديد</button>
+            </div>
+            <button type="button" onclick="printSelectedArchiveOrders()" style="background: #1a2a6c; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;">🖨️ طباعة وتنزيل المحدد (PDF)</button>
         </div>
 
         <div style="max-height: 260px; overflow-y: auto;">
             <table class="archive-list-table">
-                <thead><tr><th>رقم الأوردر</th><th>التاريخ</th><th>اسم العميل</th><th>المندوب</th><th>الإجمالي</th><th>المعاينة</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th style="width: 25px;"><input type="checkbox" id="chk-master-arch" onchange="toggleSelectAllArchive(this.checked)"></th>
+                        <th>رقم</th>
+                        <th>التاريخ</th>
+                        <th>العميل</th>
+                        <th>المندوب</th>
+                        <th>الإجمالي</th>
+                        <th>معاينة</th>
+                    </tr>
+                </thead>
                 <tbody id="archive-tbody"></tbody>
             </table>
         </div>
@@ -445,7 +511,7 @@
             <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: bold; cursor: pointer; margin-bottom: 8px;">
                 <input type="checkbox" id="opt-direct-print" checked onchange="toggleDirectPrintCopies(this.checked)">
                 <span>🖨️ طباعة الفاتورة عبر الطابعة مباشرة</span>
-            </label>
+ </label>
             <div id="direct-print-copies-box" style="margin-right: 24px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
                 <span style="font-size: 11px; color: #555;">عدد النسخ:</span>
                 <input type="number" id="direct-print-copies-val" value="2" min="1" max="10" style="width: 50px; padding: 3px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-weight: bold; color: #a30000;">
@@ -479,7 +545,6 @@
     let loggedUser = null;
     let previewedOrderData = null;
 
-    // متغيرات الرسوم البيانية لمنع التكرار
     let repsChartInstance = null;
     let areasChartInstance = null;
 
@@ -491,6 +556,63 @@
         const d = new Date();
         const dateStr = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
         document.getElementById('ord-date').value = dateStr;
+    }
+
+    function parseDateForFilter(dateStr) {
+        if (!dateStr) return null;
+        if (dateStr.includes('-')) {
+            const parts = dateStr.split('-');
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+        }
+        if (dateStr.includes('/')) {
+            const parts = dateStr.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+        return null;
+    }
+
+    function formatDateToInput(d) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function setFilterDates(prefix, period) {
+        const fromInput = document.getElementById(`${prefix}-date-from`);
+        const toInput = document.getElementById(`${prefix}-date-to`);
+        const now = new Date();
+
+        if (period === 'all') {
+            fromInput.value = '';
+            toInput.value = '';
+        } else if (period === 'today') {
+            fromInput.value = formatDateToInput(now);
+            toInput.value = formatDateToInput(now);
+        } else if (period === 'yesterday') {
+            const yest = new Date();
+            yest.setDate(now.getDate() - 1);
+            fromInput.value = formatDateToInput(yest);
+            toInput.value = formatDateToInput(yest);
+        } else if (period === 'since_yesterday') {
+            const yest = new Date();
+            yest.setDate(now.getDate() - 1);
+            fromInput.value = formatDateToInput(yest);
+            toInput.value = formatDateToInput(now);
+        } else if (period === 'week') {
+            const past = new Date();
+            past.setDate(now.getDate() - 7);
+            fromInput.value = formatDateToInput(past);
+            toInput.value = formatDateToInput(now);
+        } else if (period === 'month') {
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            fromInput.value = formatDateToInput(firstDay);
+            toInput.value = formatDateToInput(now);
+        }
+
+        if (prefix === 'rep') openReportsDashboard();
+        else if (prefix === 'log') applyAllLogFilters();
+        else if (prefix === 'arch') applyAllArchiveFilters();
     }
 
     async function syncCloudDirect() {
@@ -740,7 +862,7 @@
         if (wantDownloadPDF || wantDirectPrint) {
             let totalCopies = wantDirectPrint ? copies : 1;
             for(let c = 0; c < totalCopies; c++) {
-                exportCleanA5PDF(orderRecord, c + 1);
+                await exportCleanA5PDF(orderRecord, c + 1);
             }
         }
 
@@ -859,7 +981,7 @@
             jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
         };
 
-        html2pdf().set(opt).from(container.children[0]).save().then(() => {
+        return html2pdf().set(opt).from(container.children[0]).save().then(() => {
             container.style.display = 'none';
         });
     }
@@ -885,14 +1007,28 @@
         });
     }
 
-    // دالة توليد وتحديث لوحة التحكم والتحليلات والرسوم البيانية
     function openReportsDashboard() {
         if (!loggedUser || (!loggedUser.isDev && !loggedUser.perms?.reports)) return alert('ليس لديك صلاحية لعرض التقارير!');
         
         let totalSales = 0, totalShipping = 0, totalPieces = 0;
         let areaStats = {}, repStats = {}, itemStats = {};
 
-        const scopedData = getUserScopedOrders();
+        let scopedData = getUserScopedOrders();
+
+        const dFromStr = document.getElementById('rep-date-from').value;
+        const dToStr = document.getElementById('rep-date-to').value;
+        const dFrom = parseDateForFilter(dFromStr);
+        const dTo = parseDateForFilter(dToStr);
+
+        if (dFrom || dTo) {
+            scopedData = scopedData.filter(o => {
+                const oDate = parseDateForFilter(o.date);
+                if (!oDate) return true;
+                if (dFrom && oDate < dFrom) return false;
+                if (dTo && oDate > dTo) return false;
+                return true;
+            });
+        }
 
         scopedData.forEach(o => {
             let cleanTotal = parseFloat(String(o.grandTotal).replace(/,/g, '')) || 0;
@@ -910,7 +1046,6 @@
             repStats[rep].count++;
             repStats[rep].sum += cleanTotal;
 
-            // حساب الأصناف والقطع
             if (o.items && o.items.length > 0) {
                 o.items.forEach(it => {
                     let q = parseFloat(it.qty) || 0;
@@ -925,7 +1060,6 @@
             }
         });
 
-        // تحديد أعلى مندوب
         let topRepName = "-";
         let maxRepSales = 0;
         for(let r in repStats) {
@@ -935,7 +1069,6 @@
             }
         }
 
-        // تحديث كروت الداشبورد
         document.getElementById('rep-total-orders').innerText = scopedData.length;
         document.getElementById('rep-total-sales').innerText = totalSales.toLocaleString() + ' ج.م';
         document.getElementById('rep-total-pieces').innerText = totalPieces.toLocaleString() + ' قطعة';
@@ -944,7 +1077,6 @@
         document.getElementById('rep-total-shipping').innerText = totalShipping.toLocaleString() + ' ج.م';
         document.getElementById('rep-top-rep').innerText = topRepName;
 
-        // بناء تفاصيل المناطق
         let areaHtml = '';
         for(let a in areaStats) {
             let pct = totalSales ? ((areaStats[a].sum / totalSales) * 100).toFixed(1) : 0;
@@ -958,9 +1090,8 @@
                 </div>
             `;
         }
-        document.getElementById('rep-address-stats').innerHTML = areaHtml || '<div style="color:#888;">لا توجد طلبات مسجلة بعد.</div>';
+        document.getElementById('rep-address-stats').innerHTML = areaHtml || '<div style="color:#888;">لا توجد طلبات مسجلة للفترة المحددة.</div>';
 
-        // بناء تفاصيل المناديب
         let repHtml = '';
         for(let r in repStats) {
             let pct = totalSales ? ((repStats[r].sum / totalSales) * 100).toFixed(1) : 0;
@@ -974,26 +1105,22 @@
                 </div>
             `;
         }
-        document.getElementById('rep-users-stats').innerHTML = repHtml || '<div style="color:#888;">لا توجد بيانات مسجلة بعد.</div>';
+        document.getElementById('rep-users-stats').innerHTML = repHtml || '<div style="color:#888;">لا توجد بيانات مسجلة للفترة المحددة.</div>';
 
-        // بناء تفاصيل الأصناف
         let itemsHtml = '<table style="width:100%; border-collapse:collapse;" border="1"><thead><tr style="background:#f1f5f9;"><th>الصنف</th><th>الكمية المباعة</th><th>إجمالي القيمة</th></tr></thead><tbody>';
         let sortedItems = Object.keys(itemStats).sort((a,b) => itemStats[b].qty - itemStats[a].qty);
         sortedItems.forEach(it => {
             itemsHtml += `<tr><td style="padding:4px; text-align:right; font-weight:bold;">${it}</td><td style="text-align:center; color:#ea580c; font-weight:bold;">${itemStats[it].qty}</td><td style="text-align:center; font-weight:bold;">${itemStats[it].sum.toLocaleString()} ج.م</td></tr>`;
         });
         itemsHtml += '</tbody></table>';
-        document.getElementById('rep-items-stats').innerHTML = sortedItems.length ? itemsHtml : '<div style="color:#888;">لا توجد مبيعات أصناف مسجلة.</div>';
+        document.getElementById('rep-items-stats').innerHTML = sortedItems.length ? itemsHtml : '<div style="color:#888;">لا توجد مبيعات أصناف مسجلة للفترة المحددة.</div>';
 
-        // رسم الرسوم البيانية التفاعلية (Chart.js)
         renderDashboardCharts(repStats, areaStats);
 
-        switchReportTab('charts');
         document.getElementById('reports-modal-box').style.display = 'flex';
     }
 
     function renderDashboardCharts(repStats, areaStats) {
-        // 1. رسم المناديب
         const repLabels = Object.keys(repStats);
         const repData = repLabels.map(r => repStats[r].sum);
 
@@ -1019,7 +1146,6 @@
             }
         });
 
-        // 2. رسم المناطق (Doughnut)
         const areaLabels = Object.keys(areaStats);
         const areaData = areaLabels.map(a => areaStats[a].sum);
 
@@ -1089,6 +1215,11 @@
         const q = document.getElementById('log-filter-input').value.toLowerCase();
         const from = parseInt(document.getElementById('log-range-from').value);
         const to = parseInt(document.getElementById('log-range-to').value);
+        const dFromStr = document.getElementById('log-date-from').value;
+        const dToStr = document.getElementById('log-date-to').value;
+
+        const dFrom = parseDateForFilter(dFromStr);
+        const dTo = parseDateForFilter(dToStr);
         
         let list = getUserScopedOrders();
 
@@ -1108,6 +1239,16 @@
             });
         }
 
+        if(dFrom || dTo) {
+            list = list.filter(o => {
+                const oDate = parseDateForFilter(o.date);
+                if (!oDate) return true;
+                if (dFrom && oDate < dFrom) return false;
+                if (dTo && oDate > dTo) return false;
+                return true;
+            });
+        }
+
         renderLogTable(list);
     }
 
@@ -1115,6 +1256,8 @@
         document.getElementById('log-filter-input').value = '';
         document.getElementById('log-range-from').value = '';
         document.getElementById('log-range-to').value = '';
+        document.getElementById('log-date-from').value = '';
+        document.getElementById('log-date-to').value = '';
         applyAllLogFilters();
     }
 
@@ -1125,7 +1268,7 @@
     }
 
     async function deleteSelectedLogs() {
-        const selected = Array.from(document.querySelectorAll('.chk-log-item:checked')).map(chk => chk.value);
+        const selected = Array.from(document.ySelectorAll('.chk-log-item:checked')).map(chk => chk.value);
         if(selected.length === 0) return alert('يرجى تحديد أوردر واحد على الأقل للحذف!');
         
         if(confirm(`هل أنت متأكد من حذف (${selected.length}) أوردر محدد نهائياً من السحابة؟`)) {
@@ -1355,10 +1498,11 @@
     function renderArchiveRows(list) {
         const tbody = document.getElementById('archive-tbody');
         if(!list || list.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="padding:15px; color:#888;">لا توجد نتائج مطابقة في الأرشيف.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="padding:15px; color:#888;">لا توجد نتائج مطابقة في الأرشيف.</td></tr>';
         } else {
             tbody.innerHTML = list.map((ord) => `
                 <tr>
+                    <td><input type="checkbox" class="chk-arch-item" value="${ord.id}"></td>
                     <td style="font-weight:bold; color:#a30000; cursor:pointer;" onclick="viewOrder('${ord.id}')">#${ord.id}</td>
                     <td>${ord.date}</td>
                     <td style="font-weight:bold; cursor:pointer; color:#1a2a6c;" onclick="viewOrder('${ord.id}')">${ord.client}</td>
@@ -1370,10 +1514,34 @@
         }
     }
 
+    function toggleSelectAllArchive(status) {
+        document.querySelectorAll('.chk-arch-item').forEach(chk => chk.checked = status);
+        const master = document.getElementById('chk-master-arch');
+        if(master) master.checked = status;
+    }
+
+    async function printSelectedArchiveOrders() {
+        const selectedIds = Array.from(document.querySelectorAll('.chk-arch-item:checked')).map(chk => chk.value);
+        if(selectedIds.length === 0) return alert('يرجى تحديد فاتورة واحدة على الأقل للطباعة!');
+
+        const ordersToPrint = orderArchive.filter(o => selectedIds.includes(o.id.toString()));
+        if(confirm(`سيتم طباعة وتصدير (${ordersToPrint.length}) فاتورة محددة. هل تريد المتابعة؟`)) {
+            for(let i = 0; i < ordersToPrint.length; i++) {
+                await exportCleanA5PDF(ordersToPrint[i], 1);
+            }
+            alert('تم الانتهاء من تصدير وطباعة جميع الفواتير المحددة بنجاح! 🚀');
+        }
+    }
+
     function applyAllArchiveFilters() {
         const query = document.getElementById('archive-search-input').value.trim().toLowerCase();
         const from = parseInt(document.getElementById('arch-range-from').value);
         const to = parseInt(document.getElementById('arch-range-to').value);
+        const dFromStr = document.getElementById('arch-date-from').value;
+        const dToStr = document.getElementById('arch-date-to').value;
+
+        const dFrom = parseDateForFilter(dFromStr);
+        const dTo = parseDateForFilter(dToStr);
 
         let list = getUserScopedOrders();
 
@@ -1392,6 +1560,16 @@
             });
         }
 
+        if(dFrom || dTo) {
+            list = list.filter(o => {
+                const oDate = parseDateForFilter(o.date);
+                if (!oDate) return true;
+                if (dFrom && oDate < dFrom) return false;
+                if (dTo && oDate > dTo) return false;
+                return true;
+            });
+        }
+
         renderArchiveRows(list);
     }
 
@@ -1399,6 +1577,8 @@
         document.getElementById('archive-search-input').value = '';
         document.getElementById('arch-range-from').value = '';
         document.getElementById('arch-range-to').value = '';
+        document.getElementById('arch-date-from').value = '';
+        document.getElementById('arch-date-to').value = '';
         applyAllArchiveFilters();
     }
 
