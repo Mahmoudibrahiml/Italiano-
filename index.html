@@ -505,7 +505,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; background: #f8fafc; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px;">
             <div style="display: flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: bold; color: #1a2a6c;">
                 <span>عدد النسخ:</span>
-                <input type="number" id="preview-copies-input" value="2" min="1" max="10" style="width: 50px; padding: 3px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-weight: bold;">
+                <input type="number" id="preview-copies-input" value="1" min="1" max="10" style="width: 50px; padding: 3px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-weight: bold;">
                 <button type="button" onclick="printFromPreviewModal()" style="padding: 6px 14px; background: #27ae60; color: #fff; border: none; border-radius: 3px; font-weight: bold; cursor: pointer; font-size: 11.5px;">📄 طباعة PDF (A5)</button>
             </div>
             <button type="button" onclick="closePreview()" style="padding: 6px 14px; background: #666; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-size: 11.5px;">إغلاق</button>
@@ -524,7 +524,7 @@
             </label>
             <div id="direct-print-copies-box" style="margin-right: 24px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
                 <span style="font-size: 11px; color: #555;">عدد النسخ:</span>
-                <input type="number" id="direct-print-copies-val" value="2" min="1" max="10" style="width: 50px; padding: 3px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-weight: bold; color: #a30000;">
+                <input type="number" id="direct-print-copies-val" value="1" min="1" max="10" style="width: 50px; padding: 3px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-weight: bold; color: #a30000;">
             </div>
             <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">
                 <input type="checkbox" id="opt-download-pdf" checked>
@@ -1752,7 +1752,7 @@
             </div>
         `;
 
-        document.getElementById('preview-copies-input').value = 2;
+        document.getElementById('preview-copies-input').value = 1;
         document.getElementById('preview-modal-box').style.display = 'flex';
     }
 
@@ -1760,7 +1760,7 @@
 
     function printFromPreviewModal() {
         if(previewedOrderData) {
-            const copies = parseInt(document.getElementById('preview-copies-input').value) || 2;
+            const copies = parseInt(document.getElementById('preview-copies-input').value) || 1;
             for(let c = 0; c < copies; c++) {
                 exportCleanA5PDF(previewedOrderData, c + 1);
             }
